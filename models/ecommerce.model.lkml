@@ -13,10 +13,28 @@ datagroup: ecommerce_default_datagroup {
 persist_with: ecommerce_default_datagroup
 
 # EXPLORES
-# explore: transaction_detail {
-#     join: transaction_detail__items {
-#       view_label: "Transaction Detail: Items"
-#       sql: LEFT JOIN UNNEST(${transaction_detail.items}) as transaction_detail__items ;;
-#       relationship: one_to_many
-#     }
-# }
+explore: order_items {
+    join: inventory_items {
+      sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
+      relationship: one_to_one
+      type: inner
+    }
+
+    join: distribution_centers {
+      sql_on: ${inventory_items.product_distribution_center_id} = ${distribution_centers.id} ;;
+      relationship: many_to_one
+      type: inner
+    }
+
+    join: products {
+      sql_on: ${inventory_items.product_id} = ${products.id} ;;
+      relationship: many_to_one
+      type: inner
+    }
+
+    join: users {
+      sql_on: ${order_items.user_id} = ${users.id} ;;
+      relationship: many_to_one
+      type: inner
+    }
+}
