@@ -179,15 +179,25 @@ constant: generate_dashboard_link {
 ### LINK CONSTANTS ###
 constant: filter_mapping {
   value:
-  "'view_name.field_name|Filter Name,'"
+  "'order_items.created_date|Created Date,products.category|Category'"
 }
 
-constant: dashboard_link {
+constant: dashboard_link_1 {
   value:
   "@{generate_link_variable_defaults}
   {% assign link = link_generator._link %}
   {% assign filters_mapping = @{filter_mapping} %}
-  {% assign target_dashboard = 'annotations_write_back::' | append:  _user_attributes['access_level'] | append: '_summary' %}
+  {% assign target_dashboard = '89' %}
+  {% assign default_filters_override = true %}
+  @{generate_dashboard_link}"
+}
+
+constant: dashboard_link_2 {
+  value:
+  "@{generate_link_variable_defaults}
+  {% assign link = link_generator._link %}
+  {% assign filters_mapping = @{filter_mapping} %}
+  {% assign target_dashboard = '91' %}
   {% assign default_filters_override = true %}
   @{generate_dashboard_link}"
 }

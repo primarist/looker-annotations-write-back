@@ -72,12 +72,36 @@ view: order_items {
     type: sum
     value_format_name: usd
     sql: ${sale_price} ;;
+    link: {
+      label: "Load Dashboard 1"
+      url: "@{dashboard_link_1}"
+    }
+    link: {
+      label: "Load Dashboard 2"
+      url: "@{dashboard_link_1}"
+    }
   }
 
   measure: average_sale_price {
     type: average
     value_format_name: usd
     sql: ${sale_price} ;;
+    link: {
+      label: "Load Dashboard 1"
+      url: "@{dashboard_link_1}"
+    }
+    link: {
+      label: "Load Dashboard 2"
+      url: "@{dashboard_link_1}"
+    }
+  }
+
+  # Link generator measure for the link generating script
+  measure: link_generator {
+    hidden: yes
+    type: number
+    sql: 1 ;;
+    drill_fields: [link_generator]
   }
 
 # SETS
