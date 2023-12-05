@@ -1,6 +1,5 @@
 view: order_items {
   sql_table_name: `dl_ecomm.order_items` ;;
-  drill_fields: [id]
 
 # DIMENSIONS
   dimension: id {
@@ -67,7 +66,6 @@ view: order_items {
 # MEASURES
   measure: count {
     type: count
-    drill_fields: [detail*]
   }
 
   measure: total_sale_price {
@@ -81,14 +79,38 @@ view: order_items {
   }
 
 # SETS
-  set: detail {
-    fields: [
-      id,
-      users.last_name,
-      users.id,
-      users.first_name,
-      inventory_items.id,
-      inventory_items.product_name
-    ]
-  }
+  # set: dim_include_set {
+  #   fields: [
+  #     id,
+  #     created_date,
+  #     created_week,
+  #     created_month,
+  #     created_year,
+  #     delivered_date,
+  #     delivered_week,
+  #     delivered_month,
+  #     delivered_year,
+  #     inventory_item_id,
+  #     order_id,
+  #     returned_date,
+  #     returned_week,
+  #     returned_month,
+  #     returned_year,
+  #     sale_price,
+  #     shipped_date,
+  #     shipped_week,
+  #     shipped_month,
+  #     shipped_year,
+  #     status,
+  #     user_id
+  #   ]
+  # }
+
+  # set: measure_include_set {
+  #   fields: [
+  #     count,
+  #     total_sale_price,
+  #     average_sale_price
+  #   ]
+  # }
 }

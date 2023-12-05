@@ -1,6 +1,5 @@
 view: inventory_items {
   sql_table_name: `dl_ecomm.inventory_items` ;;
-  drill_fields: [id]
 
 # DIMENSIONS
   dimension: id {
@@ -72,26 +71,28 @@ view: inventory_items {
 # MEASURES
   measure: count {
     type: count
-    drill_fields: [detail*]
   }
 
   measure: total_cost {
     type: sum
-    sql: ${cost} ;;  }
+    sql: ${cost} ;;
+  }
 
   measure: average_cost {
     type: average
-    sql: ${cost} ;;  }
+    sql: ${cost} ;;
+  }
 
 # SETS
-  set: detail {
-    fields: [
-      id,
-      product_name,
-      products.name,
-      products.id,
-      discounts.count,
-      order_items.count
-    ]
-  }
+  # set: dim_include_set {
+  #   fields: [
+  #     id,
+  #     cost,
+  #     created_date,
+  #     created_week,
+  #     created_month,
+  #     created_year,
+
+  #   ]
+  # }
 }
