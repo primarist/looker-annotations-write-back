@@ -13,7 +13,8 @@ datagroup: ecommerce_default_datagroup {
 # EXPLORES
 explore: ecommerce_orders {
   view_name: order_items
-  label: "Orders"
+  group_label: "Annotations Write-Back & Linking"
+  label: "eCommerce Orders Explore"
   persist_with: ecommerce_default_datagroup
   fields: [
     order_items*,
