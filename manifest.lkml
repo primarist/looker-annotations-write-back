@@ -206,8 +206,8 @@ constant: table {
   value: "{% assign vis_config = '{\"type\":\"looker_grid\"}' | url_encode | prepend: '&vis_config=' %}"
 }
 
-# visualization: {
-#   id: "viz"
-#   label: "viz"
-#   file: "project_files/viz.js"
-# }
+visualization: {
+  id: "viz1"
+  label: "Annotations Visual"
+  file: "project_files/annotations_visual/viz.js"
+}
