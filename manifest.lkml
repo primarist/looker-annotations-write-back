@@ -205,3 +205,9 @@ constant: dashboard_link_2 {
 constant: table {
   value: "{% assign vis_config = '{\"type\":\"looker_grid\"}' | url_encode | prepend: '&vis_config=' %}"
 }
+
+# visualization: {
+#   id: "viz"
+#   label: "viz"
+#   file: "project_files/viz.js"
+# }
