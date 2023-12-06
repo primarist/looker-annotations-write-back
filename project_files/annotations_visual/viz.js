@@ -1,6 +1,56 @@
-let currentAnnotationId = 0;
+// Annotation
+// {
+//   "id": "a8d13884-50af-4158-9c5e-cbd6db15d01c",
+//   "dashboardId": "1",
+//   "content": "Hello",
+//   "filters": "Current filters",
+//   "url": "test_url",
+//   "explore": "dummy_explore",
+//   "createdAt": {
+//     "value": "2023-12-06T16:04:28.884Z"
+//   }
+// }
 
-const mockedAnotations = [];
+class AnnotationAPI {
+  base_url = "https://annotations-api.tfoureur.com";
+  async addAnnotation(content) {
+    const res = await fetch(this.base_url + "/annotations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        dashboardId: "1",
+        content,
+        filters: "Current filters",
+        url: "test_url",
+        explore: "dummy_explore",
+      }),
+    });
+
+    const newAnnotation = await res.json();
+    console.log("Created annotation", newAnnotation);
+    return newAnnotation;
+  }
+
+  async getAnnotations() {
+    const res = await fetch(this.base_url + "/annotations");
+    const annotations = await res.json();
+
+    console.log(annotations);
+    return annotations;
+  }
+
+  async removeAnnotation(annotationId) {
+    await fetch(this.base_url + `/annotations/${annotationId}`, {
+      method: "DELETE",
+    });
+
+    return true;
+  }
+}
+
+const annotationsApi = new AnnotationAPI();
 
 const updateContainerHeight = () => {
   const notes = document.querySelector("#notes");
@@ -9,31 +59,53 @@ const updateContainerHeight = () => {
   }px`;
 };
 
-const addNote = () => {
+const createNote = async (content) => {
+  const annotation = await annotationsApi.addAnnotation(content);
+
+  addNote(annotation);
+};
+
+const addNote = async (annotation) => {
+  const noteId = annotation.id;
+  const content = annotation.content;
+
   const notes = document.querySelector("#notes");
   const noteContainer = document.createElement("div");
 
   const input = document.querySelector("#submitInput");
-  const text = input.value ?? "Empty note";
   input.value = "";
 
-  noteContainer.setAttribute("id", `note-${currentAnnotationId}`);
+  noteContainer.setAttribute("id", `note-${noteId}`);
   noteContainer.setAttribute("class", "note");
   noteContainer.innerHTML = `
-    <input id="noteInput" value="${text}"/>
+    <input id="noteInput" value="${content}"/>
     <button id="editButton">Edit</button>
-    <button id="deleteButton" onClick="removeNote(${currentAnnotationId})">Delete</button>
+    <button id="deleteButton">Delete</button>
   `;
   notes.appendChild(noteContainer);
 
+  document
+    .querySelector(`#note-${noteId} > #editButton`)
+    .addEventListener("click", () => editNote(noteId));
+  document
+    .querySelector(`#note-${noteId} > #deleteButton`)
+    .addEventListener("click", () => removeNote(noteId));
+
   updateContainerHeight();
-  currentAnnotationId++;
 };
-const removeNote = (noteId) => {
+
+const removeNote = async (noteId) => {
+  await annotationsApi.removeAnnotation(noteId);
+
   const note = document.querySelector(`#note-${noteId}`);
   note.remove();
 
   updateContainerHeight();
+};
+
+const editNote = (noteId) => {
+  console.log(noteId);
+  console.log("edit");
 };
 
 const fetchAnnotations = (activeFilters, dashboardId) => {
@@ -43,7 +115,7 @@ const fetchAnnotations = (activeFilters, dashboardId) => {
 };
 
 const visObject = {
-  create: function (element, config) {
+  create: async (element, config) => {
     element.innerHTML = `
         <style>
           * {
@@ -93,7 +165,7 @@ const visObject = {
           }
           .note {
             width: 100%;
-            height: 40px;
+            min-height: 40px;
             display: flex;
             flex-direction: row;
             margin-bottom: 10px;
@@ -116,10 +188,24 @@ const visObject = {
           </div>
           <div id="bottomContainer">
             <input id="submitInput"/>
-            <button id="submitButton" onClick="addNote()">Add note</button>
+            <button id="submitButton">Add note</button>
           </div>
         </div>
       `;
+
+    document
+      .querySelector("#submitButton")
+      .addEventListener("click", () =>
+        createNote(
+          document.querySelector("#submitInput")?.value ?? "Empty note"
+        )
+      );
+
+    const annotations = await annotationsApi.getAnnotations();
+
+    for (let i = 0; i < annotations.length; i++) {
+      addNote(annotations[i]);
+    }
   },
 
   updateAsync: function (
@@ -130,12 +216,6 @@ const visObject = {
     details,
     doneRendering
   ) {
-    // TODO: fetch and render annotations
-    const annotations = fetchAnnotations(
-      queryResponse.activeFilters ?? [],
-      document.referrer
-    );
-
     doneRendering();
   },
 };
