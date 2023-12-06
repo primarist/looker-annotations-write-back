@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Looker Annotations Visual</title>
+        <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet"> 
+        <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+    </head>
+    <body>
+        <div id="log">
+            <div id="entry">
+                <div id="entry-text">Hello World!</div>
+                <div id="entry-buttons-container">
+                    <button id="edit-button" class="entry-mod-button edit-button" role="button">Edit</button>
+                    <button id="delete-button" class="entry-mod-button delete-button" role="button">Delete</button>    
+                </div>
+            </div>
+            <div id="entry">
+                <div id="entry-text">I'm an annotation!</div>
+                <div id="entry-buttons-container">
+                    <button id="edit-button" class="entry-mod-button edit-button" role="button">Edit</button>
+                    <button id="delete-button" class="entry-mod-button delete-button" role="button">Delete</button>    
+                </div>
+            </div>
+            <div id="entry">
+                <div id="entry-text">And I'm another!</div>
+                <div id="entry-buttons-container">
+                    <button id="edit-button" class="entry-mod-button edit-button" role="button">Edit</button>
+                    <button id="delete-button" class="entry-mod-button delete-button" role="button">Delete</button>    
+                </div>
+            </div>
+            <div id="entry">
+                <div id="entry-text">... something else</div>
+                <div id="entry-buttons-container">
+                    <button id="edit-button" class="entry-mod-button edit-button" role="button">Edit</button>
+                    <button id="delete-button" class="entry-mod-button delete-button" role="button">Delete</button>    
+                </div>
+            </div>
+        </div>
+        <div id="new-entry">
+            <div id="new-entry-editor-container">
+                <div id="new-entry-editor"></div> 
+            </div>
+            <div id="submit-button-container">
+                <button id="submit-button" class="entry-mod-button">Submit</button>
+            </div>
+        </div>
+        
+    </body>
+    <script>
+        var quill = new Quill('#new-entry-editor', {
+          theme: 'snow'
+        });
+    </script>
+</html>
