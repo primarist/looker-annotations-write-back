@@ -3,6 +3,7 @@ import { Response as ExResponse, Request as ExRequest } from "express";
 import { RegisterRoutes } from "../build/routes";
 
 import swaggerUi from "swagger-ui-express";
+import cors from "cors";
 
 export const app = express();
 
@@ -13,6 +14,7 @@ app.use(
   })
 );
 app.use(json());
+app.use(cors())
 
 RegisterRoutes(app);
 

@@ -42,7 +42,7 @@ export class AnnotationsController extends Controller {
      * @param annotation 
      * @returns 
      */
-    @Post("annotation")
+    @Post()
     public async createAnnotation(
         @Body() annotation: CreateAnnotation
     ): Promise<Annotation> {

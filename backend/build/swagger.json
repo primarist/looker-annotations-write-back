@@ -178,7 +178,7 @@
 				]
 			}
 		},
-		"/annotations/annotation": {
+		"/annotations": {
 			"post": {
 				"operationId": "CreateAnnotation",
 				"responses": {
@@ -206,9 +206,7 @@
 						}
 					}
 				}
-			}
-		},
-		"/annotations": {
+			},
 			"get": {
 				"operationId": "GetAnnotations",
 				"responses": {
