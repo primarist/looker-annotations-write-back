@@ -13,7 +13,7 @@ datagroup: ecommerce_default_datagroup {
 # EXPLORES
 explore: ecommerce_orders {
   view_name: order_items
-  group_label: "Annotations Write-Back & Linking"
+  group_label: "DashNotes: Persistent Dashboard Annotations"
   label: "eCommerce Orders Explore"
   persist_with: ecommerce_default_datagroup
   fields: [
@@ -51,5 +51,7 @@ explore: ecommerce_orders {
 }
 
 explore: annotations {
-
+  group_label: "DashNotes: Persistent Dashboard Annotations"
+  label: "Annotations Explore"
+  persist_with: ecommerce_default_datagroup
 }
