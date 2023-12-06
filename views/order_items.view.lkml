@@ -98,9 +98,10 @@ view: order_items {
 
   # Link generator measure for the link generating script
   measure: link_generator {
-    hidden: yes
+    # hidden: yes
     type: number
     sql: 1 ;;
+    html: {{link}} ;;
     drill_fields: [link_generator]
   }
 

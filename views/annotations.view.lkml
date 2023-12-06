@@ -57,7 +57,7 @@ view: annotations {
     ;;
     link: {
       label: "Load annotation source"
-      url: "{{ '' | append: annotations.url._value | append: '/' | append: annotations.dashboard_id._value | append: '?' | append: annotations.filters._value }}"
+      url: "{{ '' | append: annotations.url._value | append: annotations.dashboard_id._value | append: annotations.filters._value }}"
     }
     link: {
       label: "Explore annotation context"
@@ -67,13 +67,21 @@ view: annotations {
       label: "adv link test"
       url:
       "@{generate_link_variable_defaults}
-        {% assign link = '' | append: annotations.url._value | append: '/' | append: annotations.dashboard_id._value | append: '?' | append: annotations.filters._value %}
-        {% assign filters_mapping = @{filter_mapping} %}
-        {% assign drill_fields = '' %}
+        {% assign link = '' | append: annotations.url._value | append: annotations.dashboard_id._value | append: annotations.filters._value %}
+        {% assign filters_mapping = 'orders.created_date|orders.created_date,products.category|products.category' %}
+        {% assign drill_fields = 'order_items.order_id' %}
         {% assign different_explore = true %}
         {% assign target_model = 'ecommerce' %}
         {% assign target_explore = '' | append: annotations.explore._value %}
         @{generate_explore_link}"
     }
+  }
+
+  measure: link_generator {
+    # hidden: yes
+    type: number
+    sql: 1 ;;
+    html: {{link}} ;;
+    drill_fields: [link_generator]
   }
 }

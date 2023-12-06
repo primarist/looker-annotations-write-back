@@ -237,6 +237,7 @@ constant: generate_dashboard_link {
   {% if default_filters_override == true and default_filters != '' %}
   {% assign target_content_filters = default_filter_string | append:'&' | append: filter_string %}
   {% elsif default_filters_override == false and default_filters != '' %}
+  {% assign target_content_filters = filter_string | append:'&' | append: default_filter_string %}
   {% else %}
   {% assign target_content_filters = filter_string %}
   {% endif %}
@@ -292,6 +293,7 @@ constant: generate_explore_link {
   "
 }
 ### END LINK GENERATION ###
+
 
 ### LINK CONSTANTS ###
 constant: filter_mapping {
