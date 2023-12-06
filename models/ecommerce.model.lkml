@@ -38,7 +38,7 @@ explore: ecommerce_orders {
   }
 
   join: distribution_centers {
-    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
+    sql_on: cast(${products.distribution_center_id} as string) = cast(${distribution_centers.id} as string) ;;
     relationship: many_to_one
     type: inner
   }
