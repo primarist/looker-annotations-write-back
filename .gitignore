@@ -2,3 +2,5 @@ backend/node_modules
 backend/dist
 infrastructure/.terraform
 infrastructure/terraform.tfstate*
+backend/build
+backend/deploy.sh
