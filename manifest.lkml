@@ -143,6 +143,77 @@ constant: build_default_filter_string {
   "
 }
 
+constant: build_explore_link {
+  value: "
+  {% assign explore_link = '' %}
+  {% if host != '' %}
+  {% assign explore_link = explore_link | append: host %}
+  {% endif %}
+  {% if content != '' %}
+  {% assign explore_link = explore_link | append: content %}
+  {% endif %}
+  {% if target_model != '' %}
+  {% assign explore_link = explore_link | append: target_model | append: '/' %}
+  {% endif %}
+  {% if target_explore != '' %}
+  {% assign explore_link = explore_link | append: target_explore | append: '?'  %}
+  {% endif %}
+  {% if drill_fields != '' %}
+  {% assign explore_link = explore_link | append: drill_fields %}
+  {% endif %}
+  {% if target_content_filters != '' %}
+  {% assign explore_link = explore_link | append: target_content_filters %}
+  {% endif %}
+  {% if vis_config != '' %}
+  {% assign explore_link = explore_link | append: vis_config %}
+  {% endif %}
+  {% if pivots != '' %}
+  {% assign pivots = '&pivots=' |append: pivots %}
+  {% assign explore_link = explore_link | append: pivots %}
+  {% endif %}
+
+  {% if subtotals != '' %}
+  {% assign subtotals = '&subtotals=' |append: subtotals %}
+  {% assign explore_link = explore_link | append: subtotals %}
+  {% endif %}
+
+  {% if sorts != '' %}
+  {% assign sorts = '&sorts=' |append: sorts %}
+  {% assign explore_link = explore_link | append: sorts %}
+  {% endif %}
+
+  {% if limit != '' %}
+  {% assign limit = '&limit=' |append: limit %}
+  {% assign explore_link = explore_link | append: limit %}
+  {% endif %}
+
+  {% if column_limit != '' %}
+  {% assign column_limit = '&column_limit=' |append: column_limit %}
+  {% assign explore_link = explore_link | append: column_limit %}
+  {% endif %}
+
+  {% if total != '' %}
+  {% assign total = '&assign=' |append: total %}
+  {% assign explore_link = explore_link | append: total %}
+  {% endif %}
+
+  {% if row_total != '' %}
+  {% assign row_total = '&row_total=' |append: row_total %}
+  {% assign explore_link = explore_link | append: row_total %}
+  {% endif %}
+
+  {% if query_timezone != '' %}
+  {% assign query_timezone = '&query_timezone=' |append: query_timezone %}
+  {% assign explore_link = explore_link | append: query_timezone %}
+  {% endif %}
+
+  {% if dynamic_fields != '' %}
+  {% assign dynamic_fields = '&dynamic_fields=' |append: dynamic_fields %}
+  {% assign explore_link = explore_link | append: dynamic_fields %}
+  {% endif %}
+  "
+}
+
 constant: generate_dashboard_link {
   value: "
   {% assign content = '/dashboards-next/' %}
@@ -172,6 +243,52 @@ constant: generate_dashboard_link {
 
   {% comment %} Builds final link to be presented in frontend {% endcomment %}
   {{ host | append:content | append:target_dashboard | append: '?' | append: target_content_filters }}
+  "
+}
+
+constant: generate_explore_link {
+  value: "
+  {% assign content = '/explore/' %}
+  {% assign link_path =  link | split: '?' | first %}
+  {% assign link_path =  link_path | split: '/'  %}
+  {% assign link_query = link | split: '?' | last %}
+  {% assign link_query_parameters = link_query | split: '&' %}
+  {% assign drill_fields = drill_fields | prepend:'fields='%}
+
+  {% if different_explore == false %}
+  {% assign target_model = link_path[1] %}
+  {% assign target_explore = link_path[2] %}
+  {% endif %}
+
+  {% if new_page %}
+  @{host}
+  {% endif %}
+
+  @{extract_link_context}
+
+  {% if different_explore %}
+  @{match_filters_to_destination}
+  {% else %}
+  {% assign filters_array_destination = filters_array %}
+  {% endif %}
+
+  @{build_filter_string}
+
+  {% if default_filters != '' %}
+  @{build_default_filter_string}
+  {% endif %}
+
+  {% if default_filters_override == true and default_filters != '' %}
+  {% assign target_content_filters = filter_string | append:'&' | append: default_filter_string | prepend:'&' %}
+  {% elsif default_filters_override == false and default_filters != '' %}
+  {% assign target_content_filters = default_filter_string | append:'&' | append: filter_string | prepend:'&' %}
+  {% else %}
+  {% assign target_content_filters = filter_string | prepend:'&' %}
+  {% endif %}
+
+  {% comment %} Builds final link to be presented in frontend {% endcomment %}
+  @{build_explore_link}
+  {{explore_link}}
   "
 }
 ### END LINK GENERATION ###
