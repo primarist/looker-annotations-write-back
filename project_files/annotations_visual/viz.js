@@ -63,13 +63,13 @@ const generateURL = () => {
     let params = new URLSearchParams(url.search);
 
     for (const [filterName, value] of Object.entries(currentFilters ?? {})) {
-        params.set(filterName, encodeURIComponent(value));
+        url.searchParams.append(filterName, value);
     }
 
     console.log(url);
     console.log(params);
 
-    return params;
+    return url.toString();
 };
 
 const annotationsApi = new AnnotationAPI();
