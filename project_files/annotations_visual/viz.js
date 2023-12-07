@@ -8,9 +8,9 @@ class AnnotationAPI {
       },
       body: JSON.stringify({
         dashboardId: dashboardId ?? "1",
-        content,
-        filters: "Current filters",
+        filters: lastRenderedFilters ?? "{}",
         url: "test_url",
+        content,
         explore: "dummy_explore",
       }),
     });
@@ -19,9 +19,11 @@ class AnnotationAPI {
 
     return newAnnotation;
   }
-  async getAnnotations() {
+  async getAnnotations(filters) {
     const res = await fetch(
-      `${this.base_url}/annotations?dashboardId=${dashboardId ?? "1"}`
+      `${this.base_url}/annotations?dashboardId=${
+        dashboardId ?? "1"
+      }&filters=${filters}`
     );
     const annotations = await res.json();
 
@@ -35,19 +37,24 @@ class AnnotationAPI {
     return true;
   }
   async editAnnotation(annotationId, content) {
-    // await fetch(this.base_url + `/annotations/${annotationId}`, {
-    //   method: "PATCH",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     dashboardId: dashboardId ?? "1",
-    //     content,
-    //   }),
-    // });
+    const updatedAnnotation = await fetch(
+      this.base_url + `/annotations/${annotationId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dashboardId: dashboardId ?? "1",
+          content: content,
+          filters: lastRenderedFilters ?? "{}",
+          url: "test_url",
+          explore: "dummy_explore",
+        }),
+      }
+    );
 
-    // return true;
-    console.log("Changed " + annotationId + " to " + content);
+    return updatedAnnotation;
   }
 }
 
@@ -61,6 +68,7 @@ function extractDashboardId(url) {
 
 const url = document.referrer;
 const dashboardId = extractDashboardId(url);
+let lastRenderedFilters = "{}";
 
 const updateContainerHeight = () => {
   const notes = document.querySelector("#notes");
@@ -106,7 +114,10 @@ const renderNote = async (annotation) => {
     .addEventListener("click", () => removeNote(noteId));
   document.querySelector(`#note-${noteId} > #noteInput`).addEventListener(
     "change",
-    debounce((e) => annotationsApi.editAnnotation(noteId, e.target?.value), 500)
+    debounce(
+      (e) => annotationsApi.editAnnotation(noteId, e.target?.value ?? ""),
+      500
+    )
   );
 
   updateContainerHeight();
@@ -119,6 +130,34 @@ const removeNote = async (noteId) => {
   note.remove();
 
   updateContainerHeight();
+};
+
+const debouncedRenderNotes = debounce((filters, doneRendering) => {
+  renderNotes(filters).then(
+    () => {
+      console.log("done rerendering");
+      doneRendering();
+    },
+    () => {
+      console.log("done rerendering");
+      doneRendering();
+    }
+  );
+}, 250);
+
+const renderNotes = async (filters) => {
+  console.log("invoked render");
+  // reset layout
+  const notes = document.querySelector("#notes");
+  notes.innerHTML = "";
+
+  // fetch notes
+  const annotations = await annotationsApi.getAnnotations(filters);
+
+  // render notes
+  for (let i = 0; i < annotations.length; i++) {
+    renderNote(annotations[i]);
+  }
 };
 
 const visObject = {
@@ -211,14 +250,9 @@ const visObject = {
           document.querySelector("#submitInput")?.value ?? "Empty note"
         )
       );
-
-    const annotations = await annotationsApi.getAnnotations();
-    for (let i = 0; i < annotations.length; i++) {
-      renderNote(annotations[i]);
-    }
   },
 
-  updateAsync: function (
+  updateAsync: async function (
     data,
     element,
     config,
@@ -226,9 +260,10 @@ const visObject = {
     details,
     doneRendering
   ) {
-    console.log(queryResponse);
+    const currentFilters = JSON.stringify(queryResponse?.applied_filters ?? {});
+    debouncedRenderNotes(currentFilters, doneRendering);
 
-    doneRendering();
+    lastRenderedFilters = currentFilters;
   },
 };
 
