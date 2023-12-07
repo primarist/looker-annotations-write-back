@@ -20,7 +20,9 @@ class AnnotationAPI {
     return newAnnotation;
   }
   async getAnnotations() {
-    const res = await fetch(this.base_url + "/annotations");
+    const res = await fetch(
+      `${this.base_url}/annotations?dashboardId=${dashboardId ?? "1"}`
+    );
     const annotations = await res.json();
 
     return annotations;
@@ -102,11 +104,10 @@ const renderNote = async (annotation) => {
   document
     .querySelector(`#note-${noteId} > #deleteButton`)
     .addEventListener("click", () => removeNote(noteId));
-  document
-    .querySelector(`#note-${noteId} > #noteInput`)
-    .addEventListener("change", (e) =>
-      annotationsApi.editAnnotation(noteId, e.target?.value)
-    );
+  document.querySelector(`#note-${noteId} > #noteInput`).addEventListener(
+    "change",
+    debounce((e) => annotationsApi.editAnnotation(noteId, e.target?.value), 500)
+  );
 
   updateContainerHeight();
 };
@@ -143,7 +144,7 @@ const visObject = {
             padding: 3px;
             color: white;
             font-weight: bold;
-            background: #1E90FF;
+            background: #4285EF;
             box-shadow: 3px 3px 11px -7px rgba(66, 68, 90, 1);
             margin: 0px;
           }
@@ -176,7 +177,7 @@ const visObject = {
             width: 50px;
             font-size: 10px;
             border-radius: 15px;
-            background: #1E90FF;
+            background: #4285EF;
             font-weight: bold;
             px: 5px;
             color: white;
