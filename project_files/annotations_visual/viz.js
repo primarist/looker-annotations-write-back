@@ -263,9 +263,76 @@ const visObject = {
         details,
         doneRendering
     ) {
+        // queryResponse.applied_filters = {
+        //     "products.cost": {
+        //         field: {
+        //             align: "right",
+        //             can_filter: true,
+        //             category: "dimension",
+        //             default_filter_value: null,
+        //             description: "",
+        //             enumerations: null,
+        //             field_group_label: null,
+        //             fill_style: null,
+        //             fiscal_month_offset: 0,
+        //             has_allowed_values: false,
+        //             hidden: false,
+        //             is_filter: false,
+        //             is_numeric: true,
+        //             label: "Products Cost",
+        //             label_from_parameter: null,
+        //             label_short: "Cost",
+        //             map_layer: null,
+        //             name: "products.cost",
+        //             strict_value_format: false,
+        //             requires_refresh_on_sort: false,
+        //             sortable: true,
+        //             suggestions: null,
+        //             tags: [],
+        //             type: "number",
+        //             user_attribute_filter_types: [
+        //                 "number",
+        //                 "advanced_filter_number",
+        //             ],
+        //             value_format: null,
+        //             view: "products",
+        //             view_label: "Products",
+        //             dynamic: false,
+        //             week_start_day: "monday",
+        //             original_view: "products",
+        //             dimension_group: null,
+        //             error: null,
+        //             field_group_variant: "Cost",
+        //             measure: false,
+        //             parameter: false,
+        //             primary_key: false,
+        //             project_name: "annotations_write_back",
+        //             scope: "products",
+        //             suggest_dimension: "products.cost",
+        //             suggest_explore: "ecommerce_orders",
+        //             suggestable: false,
+        //             is_fiscal: false,
+        //             is_timeframe: false,
+        //             can_time_filter: false,
+        //             time_interval: null,
+        //             lookml_link:
+        //                 "/projects/annotations_write_back/files/views%2Fproducts.view.lkml?line=22",
+        //             permanent: null,
+        //             source_file: "views/products.view.lkml",
+        //             source_file_path:
+        //                 "annotations_write_back/views/products.view.lkml",
+        //             sql: "${TABLE}.cost ",
+        //             sql_case: null,
+        //             filters: null,
+        //             times_used: 0,
+        //         },
+        //         value: "[0,100]",
+        //     },
+        // };
+
         const parsedFilters = {};
         for (const [filterName, value] of Object.entries(
-            queryResponse?.applied_filters
+            queryResponse?.applied_filters ?? {}
         )) {
             parsedFilters[filterName] =
                 typeof value.value === "string"
@@ -275,8 +342,9 @@ const visObject = {
 
         console.log(queryResponse);
         console.log(parsedFilters);
+        console.log(JSON.stringify(parsedFilters));
 
-        currentFilters = parsedFilters;
+        currentFilters = JSON.stringify(parsedFilters);
         currentDoneFunction = doneRendering;
         debouncedRenderNotes();
     },
