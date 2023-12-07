@@ -8,7 +8,7 @@ class AnnotationAPI {
             },
             body: JSON.stringify({
                 dashboardId: dashboardId ?? "1",
-                filters: lastRenderedFilters ?? "{}",
+                filters: currentFilters ?? "{}",
                 url: "test_url",
                 content,
                 explore: "dummy_explore",
@@ -263,14 +263,22 @@ const visObject = {
         details,
         doneRendering
     ) {
-        const filters = JSON.stringify(queryResponse?.applied_filters ?? {});
-        console.log(queryResponse);
+        const parsedFilters = {};
+        for (const [filterName, value] of Object.entries(
+            queryResponse?.applied_filters
+        )) {
+            parsedFilters[filterName] =
+                typeof value.value === "string"
+                    ? value.value
+                    : JSON.stringify(value.value);
+        }
 
-        currentFilters = filters;
+        console.log(queryResponse);
+        console.log(parsedFilters);
+
+        currentFilters = parsedFilters;
         currentDoneFunction = doneRendering;
         debouncedRenderNotes();
-
-        lastRenderedFilters = filters;
     },
 };
 
