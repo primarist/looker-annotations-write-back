@@ -44,8 +44,8 @@ constant: extract_link_context {
   value: "
   {% assign filters_array = '' %}
   {% for parameter in link_query_parameters %}
-  {% assign parameter_key = parameter | split:'=' | first %}
-  {% assign parameter_value = parameter | split:'=' | last %}
+  {% assign parameter_key = parameter | split:':' | first %}
+  {% assign parameter_value = parameter | split:':' | last %}
   {% assign parameter_test = parameter_key | slice: 0,2 %}
   {% if parameter_test == 'f[' %} {% comment %} Link contains multiple parameters, need to test if filter {% endcomment %}
   {% if parameter_key != parameter_value %} {% comment %} Tests if the filter value is is filled in, if not it skips  {% endcomment %}
@@ -218,7 +218,7 @@ constant: generate_dashboard_link {
   value: "
   {% assign content = '/dashboards-next/' %}
   {% assign link_query = link | split: '?' | last %}
-  {% assign link_query_parameters = link_query | split: '&' %}
+  {% assign link_query_parameters = link_query | split: '\",\"' %}
   {% assign target_content_filters = '' %}
   {% assign host = '' %}
 

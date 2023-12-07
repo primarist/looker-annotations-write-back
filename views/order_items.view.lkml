@@ -2,6 +2,11 @@ view: order_items {
   sql_table_name: `dl_ecomm.order_items` ;;
 
 # DIMENSIONS
+  dimension: notes_join_key {
+    type: number
+    sql: 1 ;;
+  }
+
   dimension: id {
     primary_key: yes
     type: number

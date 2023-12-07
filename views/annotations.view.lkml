@@ -1,6 +1,11 @@
 view: annotations {
   sql_table_name: `looker-hackathon-annotations.looker_hackathon23_annotations.annotations` ;;
 
+  dimension: notes_join_key {
+    type: number
+    sql: 1 ;;
+  }
+
   dimension: annotation_id {
     type: string
     sql: ${TABLE}.annotation_id ;;
@@ -9,6 +14,11 @@ view: annotations {
   dimension: dashboard_id {
     type: string
     sql: ${TABLE}.dashboard_id ;;
+  }
+
+  dimension: model {
+    type: string
+    sql: ${TABLE}.model ;;
   }
 
   dimension: explore {
@@ -67,14 +77,54 @@ view: annotations {
       label: "adv link test"
       url:
       "@{generate_link_variable_defaults}
-        {% assign link = '' | append: annotations.url._value | append: annotations.dashboard_id._value | append: annotations.filters._value %}
-        {% assign filters_mapping = 'orders.created_date|orders.created_date,products.category|products.category' %}
-        {% assign drill_fields = 'order_items.order_id' %}
-        {% assign different_explore = true %}
-        {% assign target_model = 'ecommerce' %}
-        {% assign target_explore = '' | append: annotations.explore._value %}
-        @{generate_explore_link}"
+      {% assign link = '' | append: annotations.url._value | append: '?' | append: annotations.filters._value %}
+      {% assign drill_fields = '' %}
+      {% assign filters_mapping = '\"products.category\"|Category,\"order_items.created_date\"|Created Date' %}
+      {% assign target_dashboard = '' | append: annotations.dashboard_id._value %}
+      {% assign default_filters_override = true %}
+      @{generate_dashboard_link}"
     }
+  }
+
+  measure: inspect {
+    type: number
+    sql: 1 ;;
+    html:
+    {% assign content = '/dashboards-next/' %}
+    {% assign link = '' | append: annotations.url._value | append: '?' | append: annotations.filters._value %}
+    {% assign link_clean = link | replace: '","', '&' | replace: '{', '' | replace: '}', '' | replace: '"', '' %}
+    {% assign link_query = link_clean | split: '?' | last %}
+    {% assign link_query_parameters = link_query | split: '\",\"' %}
+    {% assign target_content_filters = '' %}
+    {% assign host = '' %}
+
+    {% assign filters_array = '' %}
+    {% for parameter in link_query_parameters %}
+    {% assign parameter_key = parameter | split:':' | first %}
+    {% assign parameter_value = parameter | split:':' | last %}
+    {% assign parameter_test = parameter_key | slice: 0,2 %}
+    {% if parameter_test == 'f[' %} {% comment %} Link contains multiple parameters, need to test if filter {% endcomment %}
+    {% if parameter_key != parameter_value %} {% comment %} Tests if the filter value is is filled in, if not it skips  {% endcomment %}
+    {% assign parameter_key_size = parameter_key | size %}
+    {% assign slice_start = 2 %}
+    {% assign slice_end = parameter_key_size | minus: slice_start | minus: 1 %}
+    {% assign parameter_key = parameter_key | slice: slice_start, slice_end %}
+    {% assign parameter_clean = parameter_key | append:'|' |append: parameter_value %}
+    {% assign filters_array =  filters_array | append: parameter_clean | append: ',' %}
+    {% endif %}
+    {% elsif parameter_key == 'dynamic_fields' %}
+    {% assign dynamic_fields = parameter_value %}
+    {% elsif parameter_key == 'query_timezone' %}
+    {% assign query_timezone = parameter_value %}
+    {% endif %}
+    {% endfor %}
+    {% assign size = filters_array | size | minus: 1 %}
+    {% if size > 0 %}
+    {% assign filters_array = filters_array | slice: 0, size %}
+    {% endif %}
+
+    {{ link_clean }}
+    ;;
   }
 
   measure: link_generator {
