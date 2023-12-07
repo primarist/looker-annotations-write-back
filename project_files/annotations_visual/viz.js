@@ -1,69 +1,69 @@
 class AnnotationAPI {
-  base_url = "https://annotations-api.tfoureur.com";
-  async addAnnotation(content) {
-    const res = await fetch(this.base_url + "/annotations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        dashboardId: dashboardId ?? "1",
-        filters: lastRenderedFilters ?? "{}",
-        url: "test_url",
-        content,
-        explore: "dummy_explore",
-      }),
-    });
+    base_url = "https://annotations-api.tfoureur.com";
+    async addAnnotation(content) {
+        const res = await fetch(this.base_url + "/annotations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                dashboardId: dashboardId ?? "1",
+                filters: lastRenderedFilters ?? "{}",
+                url: "test_url",
+                content,
+                explore: "dummy_explore",
+            }),
+        });
 
-    const newAnnotation = await res.json();
+        const newAnnotation = await res.json();
 
-    return newAnnotation;
-  }
-  async getAnnotations(filters) {
-    const res = await fetch(
-      `${this.base_url}/annotations?dashboardId=${
-        dashboardId ?? "1"
-      }&filters=${filters}`
-    );
-    const annotations = await res.json();
+        return newAnnotation;
+    }
+    async getAnnotations(filters) {
+        const res = await fetch(
+            `${this.base_url}/annotations?dashboardId=${
+                dashboardId ?? "1"
+            }&filters=${filters}`
+        );
+        const annotations = await res.json();
 
-    return annotations;
-  }
-  async removeAnnotation(annotationId) {
-    await fetch(this.base_url + `/annotations/${annotationId}`, {
-      method: "DELETE",
-    });
+        return annotations;
+    }
+    async removeAnnotation(annotationId) {
+        await fetch(this.base_url + `/annotations/${annotationId}`, {
+            method: "DELETE",
+        });
 
-    return true;
-  }
-  async editAnnotation(annotationId, content) {
-    const updatedAnnotation = await fetch(
-      this.base_url + `/annotations/${annotationId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          dashboardId: dashboardId ?? "1",
-          content: content,
-          filters: lastRenderedFilters ?? "{}",
-          url: "test_url",
-          explore: "dummy_explore",
-        }),
-      }
-    );
+        return true;
+    }
+    async editAnnotation(annotationId, content) {
+        const updatedAnnotation = await fetch(
+            this.base_url + `/annotations/${annotationId}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    dashboardId: dashboardId ?? "1",
+                    content: content,
+                    filters: lastRenderedFilters ?? "{}",
+                    url: "test_url",
+                    explore: "dummy_explore",
+                }),
+            }
+        );
 
-    return updatedAnnotation;
-  }
+        return updatedAnnotation;
+    }
 }
 
 const annotationsApi = new AnnotationAPI();
 
 function extractDashboardId(url) {
-  const regex = /dashboards\/(\d+)/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
+    const regex = /dashboards\/(\d+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
 }
 
 const url = document.referrer;
@@ -71,98 +71,100 @@ const dashboardId = extractDashboardId(url);
 let lastRenderedFilters = "{}";
 
 const updateContainerHeight = () => {
-  const notes = document.querySelector("#notes");
-  notes.style.height = `${document.querySelectorAll(".note").length * 58}px`;
+    const notes = document.querySelector("#notes");
+    notes.style.height = `${document.querySelectorAll(".note").length * 58}px`;
 };
 
 const createNote = async (content) => {
-  const annotation = await annotationsApi.addAnnotation(content);
+    const annotation = await annotationsApi.addAnnotation(content);
 
-  renderNote(annotation);
+    renderNote(annotation);
 };
 
 const debounce = (callback, debounceTime) => {
-  let timeoutId = null;
-  return (...args) => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => {
-      callback.apply(null, args);
-    }, debounceTime);
-  };
+    let timeoutId = null;
+    return (...args) => {
+        window.clearTimeout(timeoutId);
+        timeoutId = window.setTimeout(() => {
+            callback.apply(null, args);
+        }, debounceTime);
+    };
 };
 
 const renderNote = async (annotation) => {
-  const noteId = annotation.id;
-  const content = annotation.content;
+    const noteId = annotation.id;
+    const content = annotation.content;
 
-  const notes = document.querySelector("#notes");
-  const noteContainer = document.createElement("div");
+    const notes = document.querySelector("#notes");
+    const noteContainer = document.createElement("div");
 
-  const input = document.querySelector("#submitInput");
-  input.value = "";
+    const input = document.querySelector("#submitInput");
+    input.value = "";
 
-  noteContainer.setAttribute("id", `note-${noteId}`);
-  noteContainer.setAttribute("class", "note");
-  noteContainer.innerHTML = `
+    noteContainer.setAttribute("id", `note-${noteId}`);
+    noteContainer.setAttribute("class", "note");
+    noteContainer.innerHTML = `
     <input id="noteInput" value="${content}"/>
     <button id="deleteButton">Delete</button>
   `;
-  notes.appendChild(noteContainer);
+    notes.appendChild(noteContainer);
 
-  document
-    .querySelector(`#note-${noteId} > #deleteButton`)
-    .addEventListener("click", () => removeNote(noteId));
-  document.querySelector(`#note-${noteId} > #noteInput`).addEventListener(
-    "change",
-    debounce(
-      (e) => annotationsApi.editAnnotation(noteId, e.target?.value ?? ""),
-      500
-    )
-  );
+    document
+        .querySelector(`#note-${noteId} > #deleteButton`)
+        .addEventListener("click", () => removeNote(noteId));
+    document.querySelector(`#note-${noteId} > #noteInput`).addEventListener(
+        "change",
+        debounce(
+            (e) => annotationsApi.editAnnotation(noteId, e.target?.value ?? ""),
+            500
+        )
+    );
 
-  updateContainerHeight();
+    updateContainerHeight();
 };
 
 const removeNote = async (noteId) => {
-  await annotationsApi.removeAnnotation(noteId);
+    await annotationsApi.removeAnnotation(noteId);
 
-  const note = document.querySelector(`#note-${noteId}`);
-  note.remove();
+    const note = document.querySelector(`#note-${noteId}`);
+    note.remove();
 
-  updateContainerHeight();
+    updateContainerHeight();
 };
 
-const debouncedRenderNotes = debounce((filters, doneRendering) => {
-  renderNotes(filters).then(
-    () => {
-      console.log("done rerendering");
-      doneRendering();
-    },
-    () => {
-      console.log("done rerendering");
-      doneRendering();
-    }
-  );
-}, 250);
+let currentFilters = "{}";
+let currentDoneFunction = () => {};
+const debouncedRenderNotes = debounce(() => {
+    renderNotes(currentFilters).then(
+        () => {
+            console.log("done rerendering");
+            currentDoneFunction();
+        },
+        () => {
+            console.log("done rerendering");
+            currentDoneFunction();
+        }
+    );
+}, 1000);
 
 const renderNotes = async (filters) => {
-  console.log("invoked render");
-  // reset layout
-  const notes = document.querySelector("#notes");
-  notes.innerHTML = "";
+    console.log("invoked render");
+    // reset layout
+    const notes = document.querySelector("#notes");
+    notes.innerHTML = "";
 
-  // fetch notes
-  const annotations = await annotationsApi.getAnnotations(filters);
+    // fetch notes
+    const annotations = await annotationsApi.getAnnotations(filters);
 
-  // render notes
-  for (let i = 0; i < annotations.length; i++) {
-    renderNote(annotations[i]);
-  }
+    // render notes
+    for (let i = 0; i < annotations.length; i++) {
+        renderNote(annotations[i]);
+    }
 };
 
 const visObject = {
-  create: async (element, config) => {
-    element.innerHTML = `
+    create: async (element, config) => {
+        element.innerHTML = `
         <style>
           * {
             box-sizing: border-box
@@ -243,28 +245,33 @@ const visObject = {
         </div>
       `;
 
-    document
-      .querySelector("#submitButton")
-      .addEventListener("click", () =>
-        createNote(
-          document.querySelector("#submitInput")?.value ?? "Empty note"
-        )
-      );
-  },
+        document
+            .querySelector("#submitButton")
+            .addEventListener("click", () =>
+                createNote(
+                    document.querySelector("#submitInput")?.value ??
+                        "Empty note"
+                )
+            );
+    },
 
-  updateAsync: async function (
-    data,
-    element,
-    config,
-    queryResponse,
-    details,
-    doneRendering
-  ) {
-    const currentFilters = JSON.stringify(queryResponse?.applied_filters ?? {});
-    debouncedRenderNotes(currentFilters, doneRendering);
+    updateAsync: async function (
+        data,
+        element,
+        config,
+        queryResponse,
+        details,
+        doneRendering
+    ) {
+        const filters = JSON.stringify(queryResponse?.applied_filters ?? {});
+        console.log(queryResponse);
 
-    lastRenderedFilters = currentFilters;
-  },
+        currentFilters = filters;
+        currentDoneFunction = doneRendering;
+        debouncedRenderNotes();
+
+        lastRenderedFilters = filters;
+    },
 };
 
 looker.plugins.visualizations.add(visObject);
