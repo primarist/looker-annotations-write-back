@@ -43,9 +43,9 @@ view: annotations {
 
   dimension_group: created {
     type: time
-    timeframes: [raw, date, week, month, quarter, year]
+    timeframes: [raw, time, date, week, month, quarter, year]
     convert_tz: no
-    datatype: date
+    datatype: datetime
     sql: ${TABLE}.created_at ;;
   }
 
@@ -90,42 +90,24 @@ view: annotations {
     type: number
     sql: 1 ;;
     html:
+    {% comment %} INIT {% endcomment %}
     {% assign content = '/dashboards-next/' %}
     {% assign link = '' | append: annotations.url._value | append: '?' | append: annotations.filters._value %}
-    {% assign link_clean = link | replace: '","', '&' | replace: '{', '' | replace: '}', '' | replace: '"', '' %}
+    {% assign link_clean = link | replace: '","', '|' | replace: '{', '' | replace: '}', '' %}
     {% assign link_query = link_clean | split: '?' | last %}
-    {% assign link_query_parameters = link_query | split: '\",\"' %}
+    {% assign link_query_parameters = link_query | split: '|' %}
     {% assign target_content_filters = '' %}
     {% assign host = '' %}
+    {% assign target_dashboard = '89' %}
+    {% assign default_filters_override = true %}
 
-    {% assign filters_array = '' %}
-    {% for parameter in link_query_parameters %}
-    {% assign parameter_key = parameter | split:':' | first %}
-    {% assign parameter_value = parameter | split:':' | last %}
-    {% assign parameter_test = parameter_key | slice: 0,2 %}
-    {% if parameter_test == 'f[' %} {% comment %} Link contains multiple parameters, need to test if filter {% endcomment %}
-    {% if parameter_key != parameter_value %} {% comment %} Tests if the filter value is is filled in, if not it skips  {% endcomment %}
-    {% assign parameter_key_size = parameter_key | size %}
-    {% assign slice_start = 2 %}
-    {% assign slice_end = parameter_key_size | minus: slice_start | minus: 1 %}
-    {% assign parameter_key = parameter_key | slice: slice_start, slice_end %}
-    {% assign parameter_clean = parameter_key | append:'|' |append: parameter_value %}
-    {% assign filters_array =  filters_array | append: parameter_clean | append: ',' %}
-    {% endif %}
-    {% elsif parameter_key == 'dynamic_fields' %}
-    {% assign dynamic_fields = parameter_value %}
-    {% elsif parameter_key == 'query_timezone' %}
-    {% assign query_timezone = parameter_value %}
-    {% endif %}
-    {% endfor %}
-    {% assign size = filters_array | size | minus: 1 %}
-    {% if size > 0 %}
-    {% assign filters_array = filters_array | slice: 0, size %}
-    {% endif %}
 
-    {{ link_clean }}
+
+    {{ link_clean  }}
     ;;
   }
+
+  # {{ host | append:content | append:target_dashboard | append: '?' | append: target_content_filters }}
 
   measure: link_generator {
     # hidden: yes
