@@ -9,7 +9,7 @@ class AnnotationAPI {
             body: JSON.stringify({
                 dashboardId: dashboardId ?? "1",
                 filters: currentFilters ?? "{}",
-                url: "test_url",
+                url: generateURL() ?? "empty",
                 content,
                 explore: "dummy_explore",
             }),
@@ -48,7 +48,7 @@ class AnnotationAPI {
                     dashboardId: dashboardId ?? "1",
                     content: content,
                     filters: lastRenderedFilters ?? "{}",
-                    url: "test_url",
+                    url: generateURL() ?? "empty",
                     explore: "dummy_explore",
                 }),
             }
@@ -57,6 +57,20 @@ class AnnotationAPI {
         return updatedAnnotation;
     }
 }
+
+const generateURL = () => {
+    let url = new URL(window.referrer.split("?")[0]);
+    let params = new URLSearchParams(url.search);
+
+    for (const [filterName, value] of Object.entries(currentFilters ?? {})) {
+        params.set(filterName, encodeURIComponent(value));
+    }
+
+    console.log(url);
+    console.log(params);
+
+    return params;
+};
 
 const annotationsApi = new AnnotationAPI();
 
@@ -343,6 +357,7 @@ const visObject = {
         console.log(queryResponse);
         console.log(parsedFilters);
         console.log(JSON.stringify(parsedFilters));
+        console.log(document.referrer);
 
         currentFilters = JSON.stringify(parsedFilters);
         currentDoneFunction = doneRendering;
