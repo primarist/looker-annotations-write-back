@@ -51,7 +51,14 @@ explore: ecommerce_orders {
 }
 
 explore: annotations {
+  # extends: [ecommerce_orders]
   group_label: "DashNotes: Persistent Dashboard Annotations"
   label: "Annotations Explore"
   persist_with: ecommerce_default_datagroup
+
+  # join: annotations {
+  #   sql_on: ${order_items.notes_join_key} = ${annotations.notes_join_key} ;;
+  #   relationship: one_to_one
+  #   type: inner
+  # }
 }
