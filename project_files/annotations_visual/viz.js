@@ -59,7 +59,7 @@ class AnnotationAPI {
 }
 
 const generateURL = () => {
-    let url = new URL(window.referrer.split("?")[0]);
+    let url = new URL(document.referrer.split("?")[0]);
     let params = new URLSearchParams(url.search);
 
     for (const [filterName, value] of Object.entries(currentFilters ?? {})) {
