@@ -44,6 +44,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_PatchAnnotation.Exclude_keyofPatchAnnotation.id__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"dashboardId":{"dataType":"string","required":true},"content":{"dataType":"string","required":true},"filters":{"dataType":"string","required":true},"url":{"dataType":"string","required":true},"explore":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_PatchAnnotation.id_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_PatchAnnotation.Exclude_keyofPatchAnnotation.id__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const validationService = new ValidationService(models);
 
@@ -149,6 +159,33 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.deleteAnnotation.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.patch('/annotations/:annotationId',
+            ...(fetchMiddlewares<RequestHandler>(AnnotationsController)),
+            ...(fetchMiddlewares<RequestHandler>(AnnotationsController.prototype.updateAnnotation)),
+
+            function AnnotationsController_updateAnnotation(request: any, response: any, next: any) {
+            const args = {
+                    annotationId: {"in":"path","name":"annotationId","required":true,"dataType":"string"},
+                    patch: {"in":"body","name":"patch","required":true,"ref":"Omit_PatchAnnotation.id_"},
+                    notFoundResponse: {"in":"res","name":"404","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"reason":{"dataType":"string","required":true}}},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new AnnotationsController();
+
+
+              const promise = controller.updateAnnotation.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

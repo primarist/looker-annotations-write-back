@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Path, Post, Queries, Res, Route, TsoaResponse } from "tsoa";
-import { Annotation, CreateAnnotation } from "./annotation";
+import { Body, Controller, Delete, Get, Patch, Path, Post, Queries, Res, Route, TsoaResponse } from "tsoa";
+import { Annotation, CreateAnnotation, PatchAnnotation } from "./annotation";
 import { AnnotationsService } from "./annotations.service";
 
 export interface GetAnnotationsParams {
@@ -71,5 +71,24 @@ export class AnnotationsController extends Controller {
         @Path() annotationId: string
     ): Promise<void> {
         return this.service.deleteAnnotation(annotationId);
+    }
+
+    /**
+     * Update a specific annotation
+     * @param annotationId ID of the target annotation
+     * @returns 
+     */
+    @Patch ("{annotationId}")
+    public async updateAnnotation(
+        @Path() annotationId: string,
+        @Body() patch: Omit<PatchAnnotation, "id">, 
+        @Res() notFoundResponse: TsoaResponse<404, { reason: string }>
+    ): Promise<Annotation> {
+        const annotation = await this.service.updateAnnotation({ ...patch, id: annotationId })
+        if(!annotation) {
+            return notFoundResponse(404, { reason: `Annotation ${annotationId} not found` })
+        } else {
+            return annotation
+        }
     }
 }

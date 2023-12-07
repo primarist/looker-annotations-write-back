@@ -1,4 +1,4 @@
-import { Annotation, AnnotationDTO, CreateAnnotation } from "./annotation";
+import { Annotation, AnnotationDTO, CreateAnnotation, PatchAnnotation } from "./annotation";
 import { v4 as uuidv4 } from 'uuid'
 import { Bigquery } from "./bigquery";
 
@@ -58,6 +58,15 @@ export class AnnotationsService {
     public async deleteAnnotation(annotationId: string) {
         await this.bq.doQuery<any>(`DELETE FROM annotations WHERE annotation_id = @annotationId`, {annotationId})
         return;
+    }
+
+    public async updateAnnotation(updatedAnnotation: PatchAnnotation): Promise<Annotation> {
+        console.log(updatedAnnotation)
+        const dto = this.convertToDTO({ ...updatedAnnotation, createdAt: new Date() })
+        console.log(dto)
+        await this.bq.doQuery<any>(`UPDATE annotations SET dashboard_id = @dashboard_id, url = @url, explore = @explore, content = @content, filters = @filters WHERE annotation_id = @annotation_id`, dto)
+
+        return this.getAnnotation(updatedAnnotation.id) as Promise<Annotation>
     }
 
     public async createAnnotation(newAnnotation: CreateAnnotation): Promise<Annotation> {

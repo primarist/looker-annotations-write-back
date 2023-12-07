@@ -33,6 +33,7 @@ export interface Annotation {
 }
 
 export interface CreateAnnotation extends Omit<Annotation, "id" | "createdAt"> {}
+export interface PatchAnnotation extends Omit<Annotation, "createdAt"> {}
 
 export interface AnnotationDTO {
     annotation_id: string
